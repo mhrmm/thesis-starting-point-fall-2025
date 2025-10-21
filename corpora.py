@@ -21,6 +21,30 @@ def load_tokenizer(model_name: str):
             tokenizer = AutoTokenizer.from_pretrained("facebook/nllb-200-distilled-600M")
     return tokenizer
 
+class MultifileBitext(IterableDataset):
+    def __init__(self, lang1_files: List[str], lang2_files: List[str], lines: Optional[List[Tuple[int, int]]] = None):
+        self.lang1_files = lang1_files
+        self.lang2_files = lang2_files
+        self.lines = lines        
+        
+    def line_streamer(self, lang_index) -> Iterator[str]:
+        lang_files = self.lang1_files if lang_index == 0 else self.lang2_files
+        for file_index in range(len(self.lang1_files)):
+            file_path = lang_files[file_index]
+            current_line = 0
+            with open(file_path, "r", encoding="utf-8") as f:
+                for line in f:  
+                    if self.lines is None or self.lines[file_index][0] <= current_line < self.lines[file_index][1]:       
+                        yield line.rstrip("\n")                
+                    current_line += 1
+                    if self.lines is not None and current_line >= self.lines[file_index][1]:
+                        break
+
+    def __iter__(self) -> Iterator[Tuple[str, str]]:
+        
+        return zip(
+            self.line_streamer(0), self.line_streamer(1)
+        )
 
 class Bitext(IterableDataset):
     def __init__(self, lang1_file: str, lang2_file: str, lines: Optional[Tuple[int, int]] = None):
