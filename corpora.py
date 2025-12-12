@@ -129,7 +129,7 @@ class MixtureOfBitexts:
             src = (bitext['corpus'], bitext['src'])
             tgt = (bitext['corpus'], bitext['tgt'])
             lines = bitext["train_lines"] if split == "train" else None
-            bitexts[(src, tgt)] = Bitext(all_corpora[src], all_corpora[tgt], lines)
+            bitexts[(src, tgt)] = MultifileBitext(all_corpora[src], all_corpora[tgt], lines)
         params = config["finetuning_parameters"]
         return MixtureOfBitexts(bitexts, params['batch_size'], sampling_probs=None, only_once_thru=only_once_thru)
         

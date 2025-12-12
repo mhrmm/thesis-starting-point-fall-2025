@@ -56,5 +56,6 @@ def evaluate_translations(candidate_translations, reference_translations):
     reference_translations = [[ref] for ref in reference_translations]
     bleu_result = bleu_calc.compute(predictions = candidate_translations, references = reference_translations)
     chrf_result = chrf_calc.compute(predictions = candidate_translations, references = reference_translations)
-    return {'bleu': round(bleu_result["score"], 3), 'chrf': round(chrf_result["score"], 3)}
+    chrfPP_result = chrf_calc.compute( predictions=candidate_translations, references=reference_translations, word_order=2) 
+    return {'bleu': round(bleu_result["score"], 3), 'chrf': round(chrf_result["score"], 3), 'chrf++': round(chrfPP_result["score"], 3)}
 

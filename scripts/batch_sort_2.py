@@ -7,10 +7,14 @@ model_name = "facebook/nllb-200-distilled-600M"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 
-def batch_sort(batch_size=64):
+def batch_sort(batch_size=64, cur_directory="", language=""):
+    print("\n__________________________________")
+    print(f"Starting batch_sort for: {language}")
+    print(f"Directory: {cur_directory}")
     num_lines = 0
     line_list_en = []
-    with open("../data/aymara-spanish/train_split_helsinki.es", "r", encoding="utf-8") as f:
+    
+    with open(f"{cur_directory}/processedTrain.es", "r", encoding="utf-8") as f:
         line_list_en = f.readlines()
         for line in line_list_en:
             num_lines += 1
@@ -39,17 +43,39 @@ def batch_sort(batch_size=64):
     reshuffled_batches = []
     for k in range(number_of_batches):
         reshuffled_batches.append(batch_list[pmap_batches(k)])
-    with open(f"../data/aymara-spanish/train_split_helsinki_processed.es","w") as file:
+    
+    with open(f"{cur_directory}/optimized_train_{batch_size}.es","w") as file:
         for i in range(number_of_batches):
             for j in range(batch_size):
                 file.write(line_list_en[reshuffled_batches[i][j]])
 
-    tgt_code = "aym_Latn"
+    extension_dictionary = {
+    "ashaninka": "cni",
+    "awajun": "agr",
+    "aymara": "aym",
+    "bribri": "bzd",
+    "chatino": "ctp",
+    "guarani": "gn",
+    "nahuatl": "nah",
+    "otomi": "oto",
+    "quechua_south_bolivian": "quy",  # what your files use
+    "raramuri": "tar",
+    "shipibo_konibo": "shp",
+    "wayuu": "guc",
+    "wixarika": "hch"}
+    
+    lang_code = extension_dictionary[language]
     line_list = []
-    with open(f"../data/aymara-spanish/train_split_helsinki.{tgt_code}", "r") as f:
+    with open(f"{cur_directory}/processedTrain.{lang_code}", "r") as f:
         line_list = f.readlines()
     
-    with open(f"../data/aymara-spanish/train_split_helsinki_processed.{tgt_code}","w") as file:
+    with open(f"{cur_directory}/optimized_train_{batch_size}.{lang_code}","w") as file:
         for i in range(number_of_batches):
             for j in range(batch_size):
                 file.write(line_list[reshuffled_batches[i][j]])
+
+def organize_data(batch_size, data_dir):
+    data_dir = Path(data_dir)
+    for corpus_dir in data_dir.iterdir():
+        _,language = (str(corpus_dir)).split("/")
+        batch_sort(batch_size=batch_size, cur_directory=corpus_dir, language=language)

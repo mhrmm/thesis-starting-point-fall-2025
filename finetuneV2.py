@@ -25,12 +25,11 @@ from permutations import (
 )
 from validate import translate_tokenized_mixture_of_bitexts, evaluate_translations
 from tokenization import NllbTokenizer, HuggingfaceTokenizer
-
+from IBT import iterativeBackTranslation
 
 def cleanup():
     gc.collect()
     torch.cuda.empty_cache()
-
 
 def prepare_model(base_model: str, freeze_decoder: bool, freeze_encoder: bool, should_finetune: bool, should_resize: bool, tokenizer):
     if should_finetune:
@@ -61,6 +60,16 @@ def prepare_model(base_model: str, freeze_decoder: bool, freeze_encoder: bool, s
         model.cuda()
     return model
 
+def get_mono_paths_from_config(config, target_langs=None):
+    mono_paths = {}
+    for corpus_name, corpus_data in config['corpora'].items():
+        # Skip if not in target list (when specified)
+        if target_langs and corpus_name not in target_langs:
+            continue
+        for lang_key, lang_info in corpus_data.items():
+            if lang_key != "es" and lang_info.get("mono_data"):
+                mono_paths[corpus_name] = lang_info["mono_data"]
+    return mono_paths
 
 def evaluate(model, dev_data, batches: int = 100):
     model.eval()
@@ -89,20 +98,15 @@ def plot_losses(train_x, train_y, dev_x, dev_y, out_path: str):
 def finetune(
     train_data,
     dev_data,
-    tokenizer,
-    base_model: str,
-    model_dir: str,
+    model_dir,
+    model,
     training_steps: int,
     report_every: int,
     validate_every: int,
     patience: int,
-    freeze_decoder: bool = False,
-    freeze_encoder: bool = False,
-    should_finetune: bool = True,
-    should_resize: bool = False
+    should_finetune: bool = True
 ):
-    print(f"Training {model_dir}")
-    model = prepare_model(base_model, freeze_decoder, freeze_encoder, should_finetune, should_resize, tokenizer)
+    print(f"Training Model")
     
     if should_finetune:
         optimizer = Adafactor(
@@ -216,8 +220,6 @@ def main():
         for key in config['corpora'][corpus]:
             lang_codes[(corpus, key)] = config['corpora'][corpus][key]['lang_code']
     
-    
-
     train_data = MixtureOfBitexts.create_from_config(config, "train", only_once_thru=False)    
     dev_data = MixtureOfBitexts.create_from_config(config, "dev", only_once_thru=False)
     model_name = params["base_model"]
@@ -226,17 +228,19 @@ def main():
     elif model_name == "facebook/nllb-200-distilled-1.3B": 
         tokenizer = NllbTokenizer("1.3B", max_length=128)
         
-    #Check if new languages need to be added
-    special_tokens = list(tokenizer.get_special_tokens().keys())
-    cur_langs = set(special_tokens)
-    input_langs = set(lang_codes.values()) 
-    langs_to_add = list(input_langs - cur_langs)
-    resize = (len(langs_to_add) > 0)
-    if resize:
-        print(f"Adding unrecognized lang codes: {langs_to_add}")
+    add_new_lang_codes = params.get("add_new_lang_codes", False)
+    if add_new_lang_codes:
+        #Check if new languages need to be added
+        special_tokens = list(tokenizer.get_special_tokens().keys())
+        cur_langs = set(special_tokens)
+        input_langs = set(lang_codes.values()) 
+        langs_to_add = list(input_langs - cur_langs)
+        resize = (len(langs_to_add) > 0)
+        if resize:
+            print(f"Adding unrecognized lang codes: {langs_to_add}")
 
-    new_special_tokens = special_tokens + langs_to_add
-    tokenizer.replace_special_tokens(new_special_tokens)
+        new_special_tokens = special_tokens + langs_to_add
+        tokenizer.replace_special_tokens(new_special_tokens)
 
     # Create the permutations
     permutations = dict()
@@ -260,21 +264,68 @@ def main():
     tokenized_dev = TokenizedMixtureOfBitexts(
         dev_data, tokenizer, lang_codes=lang_codes, permutation_map=pmap
     )
+    freeze_decoder=params['freeze_decoder'] if 'freeze_decoder' in params else False
+    freeze_encoder=params['freeze_encoder'] if 'freeze_encoder' in params else False  
+    
+    model = prepare_model(model_name, freeze_decoder, freeze_encoder, should_finetune, resize, tokenizer)
+
+    should_backtrans = params["IBT"] if "IBT" in params else False
+    
+    all_langs = [lang for lang in config['corpora']]
+    data_dir = config["data_dir"]
+    
     finetune(
         tokenized_train,
         tokenized_dev,
-        tokenizer, 
-        model_name,
         model_dir,
-        params['num_steps'],
-        freeze_decoder=params['freeze_decoder'] if 'freeze_decoder' in params else False,
-        freeze_encoder=params['freeze_encoder'] if 'freeze_encoder' in params else False,        
+        model,
+        params['num_steps'],        
         should_finetune=should_finetune,
-        should_resize= resize,
         report_every=params['report_every'],
         validate_every=params['validate_every'],
         patience=params['patience']
     )
+
+    if should_backtrans:
+        ibt_iterations = params['IBT_iterations'] if 'IBT_iterations' else 1
+        backTranslateLangs = params['IBT_Langs'] if len(params['IBT_Langs']) > 0 else all_langs
+        mono_paths = get_mono_paths_from_config(config, backTranslateLangs)
+        ibt_lang_codes = {key: (value + "_Latn") for key, value in params["lang_extensions"].items()}
+        ibt = iterativeBackTranslation(mono_paths, data_dir, ibt_lang_codes, pivot_lang="spa_Latn")
+        
+        #generate empty syntheitc files
+        for lang in backTranslateLangs:
+            es_path = f"{data_dir}/{lang}/trainBackTrans.es"
+            lang_path = f"{data_dir}/{lang}/trainBackTrans.tsv"
+            Path(es_path).touch()
+            Path(lang_path).touch()
+            lang_in_corpus, _ = lang.split("-")
+            config["corpora"][lang][lang_in_corpus]["train"].append(lang_path)
+            config["corpora"][lang]["spanish"]["train"].append(es_path)
+        
+        #backtranslate
+        for i in range(ibt_iterations):
+            ibt.backTranslate(model, backTranslateLangs, tokenizer)
+            train_data = MixtureOfBitexts.create_from_config(config, "train", only_once_thru=False)    
+            dev_data = MixtureOfBitexts.create_from_config(config, "dev", only_once_thru=False)
+            
+            tokenized_train = TokenizedMixtureOfBitexts(
+                train_data, tokenizer, lang_codes=lang_codes, permutation_map=pmap
+            )
+            tokenized_dev = TokenizedMixtureOfBitexts(
+                dev_data, tokenizer, lang_codes=lang_codes, permutation_map=pmap
+            )
+            finetune(
+                tokenized_train,
+                tokenized_dev,
+                model_dir,
+                model,
+                params['num_steps'],        
+                should_finetune=should_finetune,
+                report_every=params['report_every'],
+                validate_every=params['validate_every'],
+                patience=params['patience']
+            )
 
     test_data = MixtureOfBitexts.create_from_config(config, "test", only_once_thru=True)    
     tokenized_test = TokenizedMixtureOfBitexts(test_data, tokenizer, lang_codes=lang_codes, permutation_map=pmap)

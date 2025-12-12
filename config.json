@@ -1,0 +1,561 @@
+{
+    "model_dir": "models/model-test",
+    "data_dir": "data",
+    "finetuning_parameters": {
+        "base_model": "facebook/nllb-200-distilled-600M",
+        "finetune": true,
+        "freeze_encoder": false,
+        "freeze_decoder": false,
+        "batch_size": 32,
+        "num_steps": 2000,
+        "report_every": 100,
+        "validate_every": 100,
+        "patience": 5,
+        "add_new_lang_codes": true,
+        "add_new_tokens": true,
+        "new_lang_size": 128,
+        "IBT": true,
+        "IBT_iterations": 2,
+        "IBT_training_steps": 1000,
+        "IBT_Langs": ["ashaninka-spanish"],
+        "lang_extensions": {
+            "ashaninka-spanish": "cni",
+            "awajun-spanish": "agr",
+            "aymara-spanish": "aym",
+            "bribri-spanish": "bzd",
+            "chatino-spanish": "ctp",
+            "guarani-spanish": "gn",
+            "nahuatl-spanish": "nah",
+            "otomi-spanish": "oto",
+            "quechua-spanish": "quy",
+            "raramuri-spanish": "tar",
+            "shipibo_konibo-spanish": "shp",
+            "wayuu-spanish": "guc",
+            "wixarika-spanish": "hch"
+        }
+    },
+    "corpora": {
+        "ashaninka-spanish": {
+            "ashaninka": {
+                "lang_code": "cni_Latn",
+                "train": [
+                    "data/ashaninka-spanish/processedTrain.cni"
+                ],
+                "dev": [
+                    "data/ashaninka-spanish/trainDev.cni"
+                ],
+                "test": [
+                    "data/ashaninka-spanish/dev.cni"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/ashaninka-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/ashaninka-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/ashaninka-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "awajun-spanish": {
+            "awajun": {
+                "lang_code": "agr_Latn",
+                "train": [
+                    "data/awajun-spanish/processedTrain.agr"
+                ],
+                "dev": [
+                    "data/awajun-spanish/trainDev.agr"
+                ],
+                "test": [
+                    "data/awajun-spanish/dev.agr"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/awajun-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/awajun-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/awajun-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "aymara-spanish": {
+            "aymara": {
+                "lang_code": "aym_Latn",
+                "train": [
+                    "data/aymara-spanish/processedTrain.aym"
+                ],
+                "dev": [
+                    "data/aymara-spanish/trainDev.aym"
+                ],
+                "test": [
+                    "data/aymara-spanish/dev.aym"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/aymara-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/aymara-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/aymara-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "bribri-spanish": {
+            "bribri": {
+                "lang_code": "bzd_Latn",
+                "train": [
+                    "data/bribri-spanish/processedTrain.bzd"
+                ],
+                "dev": [
+                    "data/bribri-spanish/trainDev.bzd"
+                ],
+                "test": [
+                    "data/bribri-spanish/dev.bzd"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/bribri-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/bribri-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/bribri-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "chatino-spanish": {
+            "chatino": {
+                "lang_code": "ctp_Latn",
+                "train": [
+                    "data/chatino-spanish/processedTrain.ctp"
+                ],
+                "dev": [
+                    "data/chatino-spanish/trainDev.ctp"
+                ],
+                "test": [
+                    "data/chatino-spanish/dev.ctp"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/chatino-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/chatino-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/chatino-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "guarani-spanish": {
+            "guarani": {
+                "lang_code": "gn_Latn",
+                "train": [
+                    "data/guarani-spanish/processedTrain.gn"
+                ],
+                "dev": [
+                    "data/guarani-spanish/trainDev.gn"
+                ],
+                "test": [
+                    "data/guarani-spanish/dev.gn"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/guarani-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/guarani-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/guarani-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "nahuatl-spanish": {
+            "nahuatl": {
+                "lang_code": "nah_Latn",
+                "train": [
+                    "data/nahuatl-spanish/processedTrain.nah"
+                ],
+                "dev": [
+                    "data/nahuatl-spanish/trainDev.nah"
+                ],
+                "test": [
+                    "data/nahuatl-spanish/dev.nah"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/nahuatl-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/nahuatl-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/nahuatl-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "otomi-spanish": {
+            "otomi": {
+                "lang_code": "oto_Latn",
+                "train": [
+                    "data/otomi-spanish/processedTrain.oto"
+                ],
+                "dev": [
+                    "data/otomi-spanish/trainDev.oto"
+                ],
+                "test": [
+                    "data/otomi-spanish/dev.oto"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/otomi-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/otomi-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/otomi-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "quechua-spanish": {
+            "quechua": {
+                "lang_code": "quy_Latn",
+                "train": [
+                    "data/quechua-spanish/processedTrain.quy"
+                ],
+                "dev": [
+                    "data/quechua-spanish/trainDev.quy"
+                ],
+                "test": [
+                    "data/quechua-spanish/dev.quy"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/quechua-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/quechua-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/quechua-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "raramuri-spanish": {
+            "raramuri": {
+                "lang_code": "tar_Latn",
+                "train": [
+                    "data/raramuri-spanish/processedTrain.tar"
+                ],
+                "dev": [
+                    "data/raramuri-spanish/trainDev.tar"
+                ],
+                "test": [
+                    "data/raramuri-spanish/dev.tar"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/raramuri-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/raramuri-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/raramuri-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "shipibo_konibo-spanish": {
+            "shipibo_konibo": {
+                "lang_code": "shp_Latn",
+                "train": [
+                    "data/shipibo_konibo-spanish/processedTrain.shp"
+                ],
+                "dev": [
+                    "data/shipibo_konibo-spanish/trainDev.shp"
+                ],
+                "test": [
+                    "data/shipibo_konibo-spanish/dev.shp"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/shipibo_konibo-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/shipibo_konibo-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/shipibo_konibo-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "wayuu-spanish": {
+            "wayuu": {
+                "lang_code": "guc_Latn",
+                "train": [
+                    "data/wayuu-spanish/processedTrain.guc"
+                ],
+                "dev": [
+                    "data/wayuu-spanish/trainDev.guc"
+                ],
+                "test": [
+                    "data/wayuu-spanish/dev.guc"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/wayuu-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/wayuu-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/wayuu-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        },
+        "wixarika-spanish": {
+            "wixarika": {
+                "lang_code": "hch_Latn",
+                "train": [
+                    "data/wixarika-spanish/processedTrain.hch"
+                ],
+                "dev": [
+                    "data/wixarika-spanish/trainDev.hch"
+                ],
+                "test": [
+                    "data/wixarika-spanish/dev.hch"
+                ],
+                "permutation": 0
+            },
+            "es": {
+                "lang_code": "es_Latn",
+                "train": [
+                    "data/wixarika-spanish/processedTrain.es"
+                ],
+                "dev": [
+                    "data/wixarika-spanish/trainDev.es"
+                ],
+                "test": [
+                    "data/wixarika-spanish/dev.es"
+                ],
+                "permutation": 0
+            }
+        }
+    },
+    "bitexts": [
+        {
+            "corpus": "ashaninka-spanish",
+            "src": "ashaninka",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "ashaninka-spanish",
+            "src": "es",
+            "tgt": "ashaninka",
+            "train_lines": null
+        },
+        {
+            "corpus": "awajun-spanish",
+            "src": "awajun",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "awajun-spanish",
+            "src": "es",
+            "tgt": "awajun",
+            "train_lines": null
+        },
+        {
+            "corpus": "aymara-spanish",
+            "src": "aymara",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "aymara-spanish",
+            "src": "es",
+            "tgt": "aymara",
+            "train_lines": null
+        },
+        {
+            "corpus": "bribri-spanish",
+            "src": "bribri",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "bribri-spanish",
+            "src": "es",
+            "tgt": "bribri",
+            "train_lines": null
+        },
+        {
+            "corpus": "chatino-spanish",
+            "src": "chatino",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "chatino-spanish",
+            "src": "es",
+            "tgt": "chatino",
+            "train_lines": null
+        },
+        {
+            "corpus": "guarani-spanish",
+            "src": "guarani",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "guarani-spanish",
+            "src": "es",
+            "tgt": "guarani",
+            "train_lines": null
+        },
+        {
+            "corpus": "nahuatl-spanish",
+            "src": "nahuatl",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "nahuatl-spanish",
+            "src": "es",
+            "tgt": "nahuatl",
+            "train_lines": null
+        },
+        {
+            "corpus": "otomi-spanish",
+            "src": "otomi",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "otomi-spanish",
+            "src": "es",
+            "tgt": "otomi",
+            "train_lines": null
+        },
+        {
+            "corpus": "quechua-spanish",
+            "src": "quechua",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "quechua-spanish",
+            "src": "es",
+            "tgt": "quechua",
+            "train_lines": null
+        },
+        {
+            "corpus": "raramuri-spanish",
+            "src": "raramuri",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "raramuri-spanish",
+            "src": "es",
+            "tgt": "raramuri",
+            "train_lines": null
+        },
+        {
+            "corpus": "shipibo_konibo-spanish",
+            "src": "shipibo_konibo",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "shipibo_konibo-spanish",
+            "src": "es",
+            "tgt": "shipibo_konibo",
+            "train_lines": null
+        },
+        {
+            "corpus": "wayuu-spanish",
+            "src": "wayuu",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "wayuu-spanish",
+            "src": "es",
+            "tgt": "wayuu",
+            "train_lines": null
+        },
+        {
+            "corpus": "wixarika-spanish",
+            "src": "wixarika",
+            "tgt": "es",
+            "train_lines": null
+        },
+        {
+            "corpus": "wixarika-spanish",
+            "src": "es",
+            "tgt": "wixarika",
+            "train_lines": null
+        }
+    ]
+}

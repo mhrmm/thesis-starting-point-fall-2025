@@ -21,6 +21,10 @@ class Tokenizer(ABC):
         pass
     
     @abstractmethod
+    def replace_special_tokens(self, token):
+        pass
+    
+    @abstractmethod
     def batch_decode(self):
         pass
 
@@ -59,6 +63,11 @@ class HuggingfaceTokenizer(Tokenizer):
         
     def get_special_tokens(self):
         return self.special_tokens
+    
+    def replace_special_tokens(self, tokens):
+        self.tokenizer.add_special_tokens({'additional_special_tokens': tokens})
+        self.special_tokens = dict(zip(self.tokenizer.all_special_tokens, self.tokenizer.all_special_ids))
+        
     
     def batch_decode(self, token_ids):
         return self.tokenizer.batch_decode(token_ids, skip_special_tokens=True)
